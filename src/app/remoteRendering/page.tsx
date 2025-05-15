@@ -22,11 +22,15 @@ export default function Home() {
   const startCameraStream = useCameraStore((state) => state.startCameraStream)
   const resolvingStream = useRtcStore((state) => state.resolvingStream)
 
+  const restartLocalStream = () => {
+    stopStreaming();
+    startCameraStream();
+  }
 
   // Initialize on component mount
   useEffect(() => {
     const init = async () => {
-      getCameras()
+      await getCameras()
       startCameraStream()
     }
     init()
@@ -56,7 +60,7 @@ export default function Home() {
         <Button
           size="lg"
           className="font-bold text-lg px-8 py-6 bg-primary hover:bg-primary/90"
-          onClick={!isStreaming ? startStreaming : stopStreaming}
+          onClick={!isStreaming ? startStreaming : restartLocalStream}
           disabled={resolvingStream}
         >
           {isStreaming ? "Stop AR" : "Start AR"}

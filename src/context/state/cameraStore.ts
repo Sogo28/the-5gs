@@ -39,7 +39,9 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
         error: null,
       }));
 
-      console.log("Available cameras:", videoDevices);
+      videoDevices.forEach((device) => {
+        console.log("Camera found:", device.label, device.deviceId);
+      });
     } catch (err: any) {
       // Handle permission denied error
       if (err.name === "NotAllowedError") {
@@ -58,13 +60,17 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
     const qualityPresets = get().qualityPresets;
     const presets = qualityPresets[videoQuality as keyof typeof qualityPresets];
     const selectedCamera = get().selectedCamera;
+
+    const stopVideoStream = get().stopCameraStream;
+    stopVideoStream(); // Stop any existing camera stream before starting a new one
+
     return new Promise(async (resolve, reject) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             deviceId: selectedCamera ? { exact: selectedCamera } : undefined,
-            height: presets.height,
-            width: presets.width,
+            // height: presets.height,
+            // width: presets.width,
             frameRate: presets.fps,
           },
         });
@@ -75,7 +81,7 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
         const maxFps = capabilities.frameRate?.max ?? 30;
         const aspectRatio = maxWidth / maxHeight;
 
-        console.log("Camera stream started:", stream, "Capabilities:", capabilities);
+        console.log("Camera stream started.");
         set({
           cameraStream: stream,
           mediaCapabilities: capabilities,
@@ -84,9 +90,9 @@ export const useCameraStore = create<CameraStore>((set, get) => ({
             high: { width: 720, height: 1280, fps: 30 },
             medium: { width: 540, height: Math.round(540 * aspectRatio), fps: 30 },
             low: { width: 360, height: Math.round(360 * aspectRatio), fps: 15 },
-          }
+          },
+          selectedCamera: capabilities.deviceId,
         });
-        console.log(qualityPresets);
         resolve();
       } catch (err) {
         console.error("Error starting camera stream:", err);

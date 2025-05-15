@@ -21,10 +21,8 @@ export function SettingsForm() {
   const setSelectedCamera = useCameraStore((state) => state.setSelectedCamera)
   const availableCameras = useCameraStore((state) => state.availableCameras)
   const setVideoQuality = useCameraStore((state) => state.setVideoQuality)
+  const selectedCamera = useCameraStore((state) => state.selectedCamera)
   const videoQuality = useCameraStore((state) => state.videoQuality)
-  const isStreaming = useRtcStore((state) => state.isStreaming)
-  const qualityPresets = useCameraStore((state) => state.qualityPresets)
-
   const form = useForm<SettingsFormValues>({
     defaultValues: {
       codec: "H264",
@@ -97,7 +95,7 @@ export function SettingsForm() {
                   <FormLabel>Camera Selection</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={availableCameras[0]?.deviceId}
+                    defaultValue={selectedCamera || undefined}
                   >
                     <FormControl>
                       <SelectTrigger>

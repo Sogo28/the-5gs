@@ -42,7 +42,7 @@ export default function VideoStream() {
           ref={videoRef}
           autoPlay
           playsInline
-          className="w-full h-full object-contain aspect-video"
+          className="w-full h-full object-contain"
 
         />
       ) : videoStream ? (
